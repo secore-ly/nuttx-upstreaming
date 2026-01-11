@@ -934,6 +934,7 @@ static void w5500_fence(FAR struct w5500_driver_s *self)
   self->lower->enable(self->lower, false);
   w5500_reset(self, true);  /* Reset and keep reset asserted */
   self->w_bifup = false;
+  netdev_carrier_off(&self->w_dev);
 }
 
 /****************************************************************************
@@ -1059,6 +1060,8 @@ static int w5500_unfence(FAR struct w5500_driver_s *self)
 
   if (value & PHYCFGR_LNK)
     {
+      netdev_carrier_on(&self->w_dev);
+
       ninfo("Link up (%d Mbps / %s duplex)\n",
             (value & PHYCFGR_SPD) ? 100 : 10,
             (value & PHYCFGR_DPX) ? "full" : "half");
